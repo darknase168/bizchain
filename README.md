@@ -1,135 +1,75 @@
-# BizChain 🚀
+# 🕌 BizChain - Blockchain untuk Sistem Agen Haji & Umroh
 
-**Feeless Blockchain for Retail, Minimarket & Education Businesses**
+[![Go Version](https://img.shields.io/badge/Go-1.21+-blue.svg)](https://golang.org)
+[![Cosmos SDK](https://img.shields.io/badge/Cosmos%20SDK-v0.50-brightgreen.svg)](https://cosmos.network)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-BizChain is a custom Cosmos SDK blockchain built with CometBFT, designed specifically for retail/minimarket and education businesses. Key features:
+**BizChain** adalah blockchain khusus untuk sistem manajemen Agen Haji & Umroh, dibangun menggunakan Cosmos SDK. Mendukung fitur-fitur lengkap dari manajemen jamaah, paket, pembayaran escrow, asuransi, hingga sistem POS/Retail dengan **Multi-Cabang Support**.
 
-- ✅ **Zero Transaction Fees** - Send transactions without any gas costs
-- ✅ **Custom POS Module** - Point of Sales on-chain (products, transactions, inventory)
-- ✅ **Custom Wallet** - Full-featured web wallet with CosmJS
-- ✅ **Fast Finality** - Powered by CometBFT consensus
-- ✅ **Bech32 Address** - `point1...` prefix addresses
+## ✨ Fitur Utama
 
-## Architecture
+### 🕋 Haji & Umroh Management
+- **Jamaah Management** - Pendaftaran dan verifikasi data jamaah dengan DID
+- **Paket Management** - Pengelolaan paket haji/umroh dengan review system
+- **Pembayaran Escrow** - Sistem pembayaran bertahap dengan smart escrow
+- **Visa Processing** - Tracking status visa application
+- **Hotel & Flight** - Manajemen booking hotel dan tiket pesawat NFT
+- **Keberangkatan** - Tracking journey stages (manasik, departure, rituals, return)
 
-```
-bizchaind                    # Main blockchain daemon
-├── app/                     # Cosmos SDK application setup
-│   ├── app.go              # Main app initialization
-│   ├── config.go           # App configuration & constants
-│   └── encoding.go         # Encoding configuration
-├── cmd/bizchaind/          # CLI entry point
-│   ├── main.go             # Main function
-│   └── cmd/root.go         # Root CLI command
-├── x/pos/                  # Custom POS Module
-│   ├── keeper/             # State management
-│   ├── types/              # Types, messages, errors
-│   ├── client/cli/         # CLI commands
-│   ├── module.go           # Module registration
-│   └── genesis.go          # Genesis handling
-├── proto/                  # Protocol Buffer definitions
-├── wallet/                 # Custom Wallet Frontend
-│   ├── src/                # React + CosmJS
-│   └── package.json        # Dependencies
-└── Makefile                # Build & manage commands
-```
+### 💼 Ekosistem Agen
+- **Multi-Level Agent System** - Pusat, Cabang, Sub-agen dengan commission tracking
+- **Referral & Reward** - Sistem referral dengan loyalty points
+- **DAO Governance** - Voting dan proposal untuk keputusan bersama
+- **Insurance** - Asuransi perjalanan dengan blockchain-based claims
+- **Oleh-Oleh Marketplace** - Pre-order marketplace untuk oleh-oleh haji/umroh
 
-## Prerequisites
+### 🏪 POS/Retail System
+- **Multi-Satuan** - Support multiple units of measure (pcs, dus, karton)
+- **Harga Level** - Tiered pricing (ecer, grosir, member)
+- **Barang Gabungan** - Bundle/composite products
+- **📍 Multi-Cabang** - Multi-branch inventory & transaction management ✨
+- **Akuntansi Terintegrasi** - Chart of accounts, journal entries, financial reports
 
-- [Go](https://golang.org/dl/) 1.22+ (recommended: 1.26+)
-- [Node.js](https://nodejs.org/) 18+ (for wallet)
-- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+### 🔗 Blockchain Features
+- **Zero Fees** - Transaksi tanpa biaya gas
+- **IBC Ready** - Inter-Blockchain Communication support
+- **Audit Trail** - Semua transaksi tercatat dan dapat diaudit
+- **gRPC & REST API** - Modern API interface
 
-## Quick Start - Running the Blockchain
+## 🚀 Quick Start
 
-### 1. Build the binary
+### Prerequisites
+- **Go** 1.21+ 
+- **Node.js** 18+ dan npm (untuk web wallet)
+- **Git**
 
-```bash
-# Build from source
-make build
-
-# Or install to GOPATH/bin
-make install
-```
-
-### 2. Initialize the chain
+### Installation
 
 ```bash
-# Initialize with default settings
-bizchaind init my-node --chain-id bizchain-1
+# Clone repository
+git clone https://github.com/darknase168/bizchain.git
+cd bizchain
 
-# Or use the Makefile
-make init MONIKER=my-node
+# Build blockchain
+go build -o build/bizchaind ./cmd/bizchaind
+
+# Initialize chain
+./build/bizchaind init mynode --chain-id bizchain-1
+
+# Configure zero fees (optional, edit ~/.bizchain/config/app.toml)
+# minimum-gas-prices = "0upoint"
+
+# Create genesis account
+./build/bizchaind keys add alice
+./build/bizchaind add-genesis-account alice 1000000000000upoint --keyring-backend test
+./build/bizchaind gentx alice 1000000upoint --chain-id bizchain-1 --keyring-backend test
+./build/bizchaind collect-gentxs
+
+# Start node
+./build/bizchaind start
 ```
 
-### 3. Configure Zero Fees (Already set by default)
-
-The chain is configured with `minimum-gas-prices = "0upoint"` for zero-fee transactions.
-This is set in `app.toml` automatically.
-
-### 4. Create a wallet
-
-```bash
-# Create a new wallet (address: point1...)
-bizchaind keys add my-wallet
-
-# List wallets
-bizchaind keys list
-
-# Show wallet balance
-bizchaind query bank balances point1...
-```
-
-### 5. Add genesis account & start
-
-```bash
-# Add genesis account with tokens
-bizchaind add-genesis-account point1... 1000000000upoint
-
-# Generate genesis transaction
-bizchaind gentx my-wallet 500000000upoint --chain-id bizchain-1
-
-# Collect genesis transactions
-bizchaind collect-gentxs
-
-# Start the chain
-bizchaind start
-```
-
-## POS Module Commands
-
-### Products
-
-```bash
-# Create a product (0 fee!)
-bizchaind tx pos create-product "Indomie Goreng" 3500000 IDM-001 Makanan \
-  --from my-wallet --chain-id bizchain-1 --fees 0upoint --yes
-
-# List all products
-bizchaind query pos list-product
-
-# Show product details
-bizchaind query pos show-product 1
-
-# Add stock
-bizchaind tx pos add-stock 1 100 \
-  --from my-wallet --chain-id bizchain-1 --fees 0upoint --yes
-```
-
-### Transactions (Sales)
-
-```bash
-# Create a POS sale (sell 2x product 1 at 3500 POINT each)
-bizchaind tx pos create-transaction "customer-address" "1" "2" "3500000" \
-  --from my-wallet --chain-id bizchain-1 --fees 0upoint --yes
-
-# List all transactions
-bizchaind query pos list-transaction
-```
-
-## Wallet Frontend
-
-### Development
+### Web Wallet
 
 ```bash
 cd wallet
@@ -137,84 +77,182 @@ npm install
 npm run dev
 ```
 
-The wallet will be available at `http://localhost:5173`
+Buka browser: `http://localhost:5173`
 
-### Features
+## 📚 Dokumentasi Lengkap
 
-- **Create Wallet** - Generate new 24-word mnemonic wallet
-- **Import Wallet** - Import from existing mnemonic
-- **Check Balance** - View POINT token balance
-- **Send Tokens** - Send POINT tokens to other addresses
-- **POS Dashboard** - Full Point of Sales interface
-- **Product Management** - Create and manage products
-- **Transaction History** - View all transactions
-- **Zero Fee** - All transactions are free
+- **[MULTI_CABANG.md](MULTI_CABANG.md)** - Spesifikasi fitur Multi-Cabang
+- **[IMPLEMENTASI_MULTI_CABANG.md](IMPLEMENTASI_MULTI_CABANG.md)** - Detail implementasi Multi-Cabang
+- **[JALANKAN_NODE.md](JALANKAN_NODE.md)** - Panduan lengkap menjalankan node (Windows & GitHub Codespaces)
+- **[Fitur_Sistem_Agen_Haji_Umroh_Blockchain_CosmosSDK.md](Fitur_Sistem_Agen_Haji_Umroh_Blockchain_CosmosSDK.md)** - Spesifikasi lengkap sistem
 
-## Tokenomics
+## 🏗️ Arsitektur
 
-| Token | Denom | Decimals | Address Prefix |
-|-------|-------|----------|----------------|
-| POINT | upoint | 6 | point1... |
-
-- **Bech32 Prefix:** `point`
-- **Coin Type:** 118 (Cosmos standard)
-- **BIP44 Purpose:** 44'
-
-## Makefile Commands
-
-```bash
-make build              # Build the blockchain binary
-make install            # Install binary to GOPATH
-make init               # Initialize chain
-make start              # Start the node
-make create-wallet      # Create wallet (NAME=my-wallet)
-make create-product     # Create product
-make create-transaction # Create POS sale
-make list-products      # List all products
-make add-stock          # Add stock to product
+```
+bizchain/
+├── app/                   # Application setup
+├── cmd/bizchaind/        # CLI binary
+├── proto/                # Protobuf definitions
+│   └── bizchain/
+│       ├── agen/         # Agent module
+│       ├── jamaah/       # Pilgrim module
+│       ├── paket/        # Package module
+│       ├── pembayaran/   # Payment escrow
+│       ├── visa/         # Visa processing
+│       ├── hotel/        # Hotel management
+│       ├── ticket/       # Flight tickets (NFT)
+│       ├── pos/          # POS/Retail (Multi-Cabang)
+│       └── ...
+├── x/                    # Custom modules
+│   ├── agen/
+│   ├── jamaah/
+│   ├── paket/
+│   ├── pembayaran/
+│   ├── pos/             # POS module with Multi-Cabang
+│   └── ...
+└── wallet/              # React web wallet
+    └── src/
+        ├── HajiUmrohDashboard.tsx
+        ├── RetailDashboard.tsx    # Multi-Cabang UI
+        ├── AgenEkosistemDashboard.tsx
+        └── ...
 ```
 
-## Project Structure Details
+## 🔌 API Endpoints
 
-### Custom POS Module (`x/pos/`)
+### REST API (Port 1317)
 
-The POS module provides on-chain functionality for:
+**POS/Retail (Multi-Cabang):**
+```
+GET /bizchain/pos/product                    # All products
+GET /bizchain/pos/product_by_branch/{id}     # Products by branch ✨
+GET /bizchain/pos/transaction_by_branch/{id} # Transactions by branch ✨
+GET /bizchain/pos/unit                       # Units of measure
+GET /bizchain/pos/account                    # Chart of accounts
+GET /bizchain/pos/trial_balance              # Trial balance
+GET /bizchain/pos/income_statement           # Income statement
+GET /bizchain/pos/balance_sheet              # Balance sheet
+```
 
-- **Product Management:** Create, update, and manage product inventory
-- **POS Transactions:** Record sales with multiple items
-- **Stock Management:** Track and update product stock levels
-- **Zero Fee Configuration:** All transactions are feeless
+**Haji & Umroh:**
+```
+GET /bizchain/jamaah/jamaah         # All pilgrims
+GET /bizchain/paket/paket           # All packages
+GET /bizchain/pembayaran/pembayaran # All payments
+GET /bizchain/visa/visa             # All visas
+GET /bizchain/hotel/hotel           # All hotels
+GET /bizchain/ticket/ticket         # All tickets
+GET /bizchain/keberangkatan/keberangkatan # All journeys
+```
 
-### Messages
+**Agen & Ecosystem:**
+```
+GET /bizchain/agen/agen             # All agents
+GET /bizchain/referral/referral     # All referrals
+GET /bizchain/reward/reward         # All rewards
+GET /bizchain/dao/proposal          # All DAO proposals
+GET /bizchain/oleholeh/product      # Marketplace products
+```
 
-| Message | Description |
-|---------|-------------|
-| `MsgCreateProduct` | Create a new product listing |
-| `MsgUpdateProduct` | Update product details |
-| `MsgDeleteProduct` | Deactivate a product |
-| `MsgCreateTransaction` | Record a POS sale |
-| `MsgAddStock` | Add inventory to a product |
+## 💡 Contoh Penggunaan
 
-### Queries
+### Buat Produk dengan Multi-Cabang ✨
 
-| Query | Description |
-|-------|-------------|
-| `Product` | Get product by ID |
-| `ProductAll` | List all products |
-| `Transaction` | Get transaction by ID |
-| `TransactionAll` | List all transactions |
+```bash
+bizchaind tx pos create-product \
+  "Indomie Goreng" \
+  "3500" \
+  "SKU-001" \
+  "Makanan" \
+  --description "Mie instan rasa goreng" \
+  --branch-id "JKT" \
+  --from alice \
+  --chain-id bizchain-1 \
+  --keyring-backend test \
+  --yes
+```
 
-## Security
+### Query Produk per Cabang ✨
 
-- **Cosmos SDK**: Industry-standard blockchain framework
-- **CometBFT**: Byzantine Fault Tolerant consensus
-- **Bech32 Addresses**: Human-readable, checksummed addresses
-- **BIP-39 Mnemonics**: 24-word recovery phrases
+```bash
+curl http://localhost:1317/bizchain/pos/product_by_branch/JKT
+```
 
-## License
+### Registrasi Jamaah
 
-MIT
+```bash
+bizchaind tx jamaah create-jamaah \
+  "Ahmad Yani" \
+  "081234567890" \
+  "ahmad@email.com" \
+  "Jakarta Selatan" \
+  "A1234567" \
+  --from alice \
+  --chain-id bizchain-1 \
+  --yes
+```
 
-## Support
+### Buat Paket Umroh
 
-Built for the retail & education sector. Zero fees, maximum efficiency. 🎯
+```bash
+bizchaind tx paket create-paket \
+  "Paket Umroh Ekonomis" \
+  "25000000" \
+  "2024-03-15" \
+  45 \
+  --category "umroh" \
+  --from alice \
+  --chain-id bizchain-1 \
+  --yes
+```
+
+## 🌐 Deploy ke GitHub Codespaces
+
+1. Buka repository di GitHub
+2. Klik **Code** > **Codespaces** > **Create codespace on main**
+3. Ikuti panduan di [JALANKAN_NODE.md](JALANKAN_NODE.md#-menjalankan-di-github-codespaces)
+
+## 🎯 Fitur Multi-Cabang
+
+Sistem Multi-Cabang memungkinkan satu Group (Toko) mengelola banyak cabang dalam satu blockchain:
+
+- Setiap cabang memiliki **inventory terpisah**
+- Setiap cabang memiliki **transaksi terpisah**
+- Owner dapat melihat **laporan seluruh cabang real-time**
+- **Audit trail transparan** untuk semua aktivitas
+- Support **transfer stok antar cabang**
+
+### Contoh Struktur:
+```
+Group: TOKO ABC
+├── Cabang Jakarta (JKT)
+├── Cabang Bandung (BDG)
+├── Cabang Semarang (SMG)
+└── Cabang Surabaya (SUR)
+```
+
+Lihat dokumentasi lengkap di [MULTI_CABANG.md](MULTI_CABANG.md)
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📝 License
+
+This project is licensed under the MIT License.
+
+## 🔗 Links
+
+- **Repository**: https://github.com/darknase168/bizchain
+- **Issues**: https://github.com/darknase168/bizchain/issues
+- **Cosmos SDK**: https://docs.cosmos.network
+- **Tendermint**: https://docs.tendermint.com
+
+## 👨‍💻 Author
+
+**darknase168**
+- GitHub: [@darknase168](https://github.com/darknase168)
+
+---
+
+**Built with ❤️ using Cosmos SDK**
