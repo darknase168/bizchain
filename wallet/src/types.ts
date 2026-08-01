@@ -4,7 +4,7 @@ export const CHAIN_CONFIG = {
   chainId: 'bizchain-1',
   chainName: 'BizChain',
   rpcUrl: 'http://localhost:26657',
-  restUrl: 'http://localhost:1317',
+  restUrl: 'https://scaling-dollop-q7964qgrq65jf9764.github.dev/',
   bech32Prefix: 'rupiah',
   coinDenom: 'RUPIAH',
   coinMinimalDenom: 'uidr',
