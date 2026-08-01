@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package bizchain.agen;
+
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/agen/types";
+
+// Complaint represents a complaint filed against an agent
+message Complaint {
+  uint64 id = 1;
+  string reporter = 2;
+  string reason = 3;
+  string status = 4;      // open, resolved
+  string resolution = 5;
+  string created_at = 6;
+  string resolved_at = 7;
+}
+
+// AgentPerformance represents a performance record for an agent (rekam jejak)
+message AgentPerformance {
+  string agent = 1;
+  string period = 2;       // YYYY-MM
+  uint64 sales = 3;
+  string volume = 4;       // total sales volume
+  string rating_avg = 5;   // average rating (0-5)
+  string score = 6;        // computed score (0-100)
+  string created_at = 7;
+}
+
+// Agen represents an agent in the multi-level network (pusat, cabang, subagen)
+message Agen {
+  uint64 id = 1;
+  string address = 2;       // wallet address of the agent
+  string name = 3;
+  string parent_id = 4;     // id of parent agent (0 = pusat / root)
+  string level = 5;         // pusat, cabang, subagen
+  string status = 6;        // active, inactive, suspended
+  string commission_rate = 7; // commission rate in basis points (e.g. "30" = 3.0%)
+  string score = 8;         // aggregate track-record score (0-100)
+  string rating_avg = 9;    // average rating from paket reviews
+  uint64 total_downline = 10;
+  uint64 total_sales = 11;
+  string total_volume = 12;
+  repeated Complaint complaints = 13;
+  repeated AgentPerformance performance = 14;
+  string creator = 15;
+  string created_at = 16;
+  string updated_at = 17;
+}
+
+// Params defines the parameters for the agen module
+message Params {
+  bool zero_fee_enabled = 1;
+}
+
+// GenesisState defines the genesis state of the agen module
+message GenesisState {
+  repeated Agen agen_list = 1;
+  uint64 agen_count = 2;
+  uint64 complaint_count = 3;
+  Params params = 4;
+}

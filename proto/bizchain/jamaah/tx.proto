@@ -1,0 +1,104 @@
+syntax = "proto3";
+
+package bizchain.jamaah;
+
+import "cosmos_proto/cosmos.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "google/api/annotations.proto";
+import "bizchain/jamaah/jamaah.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/jamaah/types";
+
+// Msg defines the jamaah module Msg service
+service Msg {
+  // CreateJamaah registers a new pilgrim (DID)
+  rpc CreateJamaah(MsgCreateJamaah) returns (MsgCreateJamaahResponse);
+  // UpdateJamaah updates pilgrim data
+  rpc UpdateJamaah(MsgUpdateJamaah) returns (MsgUpdateJamaahResponse);
+  // AddDocument adds a hashed document to a pilgrim
+  rpc AddDocument(MsgAddDocument) returns (MsgAddDocumentResponse);
+  // AddVaccination adds a vaccination record to a pilgrim
+  rpc AddVaccination(MsgAddVaccination) returns (MsgAddVaccinationResponse);
+}
+
+// Query defines the jamaah module Query service
+service Query {
+  // Jamaah queries a pilgrim by ID
+  rpc Jamaah(QueryGetJamaahRequest) returns (QueryGetJamaahResponse) {
+    option (google.api.http) = { get: "/bizchain/jamaah/jamaah/{id}" };
+  }
+  // JamaahAll queries all pilgrims
+  rpc JamaahAll(QueryAllJamaahRequest) returns (QueryAllJamaahResponse) {
+    option (google.api.http) = { get: "/bizchain/jamaah/jamaah" };
+  }
+}
+
+// ---- Messages ----
+
+message MsgCreateJamaah {
+  string creator = 1;
+  string name = 2;
+  string phone = 3;
+  string email = 4;
+  string address = 5;
+  string passport_number = 6;
+  string photo_hash = 7;
+}
+
+message MsgCreateJamaahResponse {
+  uint64 id = 1;
+}
+
+message MsgUpdateJamaah {
+  string creator = 1;
+  uint64 id = 2;
+  string name = 3;
+  string phone = 4;
+  string email = 5;
+  string address = 6;
+  string passport_number = 7;
+  string photo_hash = 8;
+  string status = 9;
+}
+
+message MsgUpdateJamaahResponse {}
+
+message MsgAddDocument {
+  string creator = 1;
+  uint64 jamaah_id = 2;
+  string doc_type = 3;
+  string hash = 4;
+  string storage_ref = 5;
+}
+
+message MsgAddDocumentResponse {}
+
+message MsgAddVaccination {
+  string creator = 1;
+  uint64 jamaah_id = 2;
+  string vaccine_name = 3;
+  string date = 4;
+  string issuer = 5;
+  string batch = 6;
+}
+
+message MsgAddVaccinationResponse {}
+
+// ---- Queries ----
+
+message QueryGetJamaahRequest {
+  uint64 id = 1;
+}
+
+message QueryGetJamaahResponse {
+  Jamaah jamaah = 1;
+}
+
+message QueryAllJamaahRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllJamaahResponse {
+  repeated Jamaah jamaah = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}

@@ -1,0 +1,125 @@
+syntax = "proto3";
+
+package bizchain.asuransi;
+
+import "cosmos_proto/cosmos.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "google/api/annotations.proto";
+import "bizchain/asuransi/asuransi.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/asuransi/types";
+
+// Msg defines the asuransi module Msg service
+service Msg {
+  // CreateAsuransi issues a digital insurance policy
+  rpc CreateAsuransi(MsgCreateAsuransi) returns (MsgCreateAsuransiResponse);
+  // UpdateAsuransiStatus updates policy status
+  rpc UpdateAsuransiStatus(MsgUpdateAsuransiStatus) returns (MsgUpdateAsuransiStatusResponse);
+  // SubmitClaim files an insurance claim
+  rpc SubmitClaim(MsgSubmitClaim) returns (MsgSubmitClaimResponse);
+  // DecideClaim approves/rejects a claim
+  rpc DecideClaim(MsgDecideClaim) returns (MsgDecideClaimResponse);
+}
+
+// Query defines the asuransi module Query service
+service Query {
+  // Asuransi queries a policy by ID
+  rpc Asuransi(QueryGetAsuransiRequest) returns (QueryGetAsuransiResponse) {
+    option (google.api.http) = { get: "/bizchain/asuransi/asuransi/{id}" };
+  }
+  // AsuransiAll queries all policies
+  rpc AsuransiAll(QueryAllAsuransiRequest) returns (QueryAllAsuransiResponse) {
+    option (google.api.http) = { get: "/bizchain/asuransi/asuransi" };
+  }
+  // Claim queries a claim by ID
+  rpc Claim(QueryGetClaimRequest) returns (QueryGetClaimResponse) {
+    option (google.api.http) = { get: "/bizchain/asuransi/claim/{id}" };
+  }
+  // ClaimAll queries all claims
+  rpc ClaimAll(QueryAllClaimRequest) returns (QueryAllClaimResponse) {
+    option (google.api.http) = { get: "/bizchain/asuransi/claim" };
+  }
+}
+
+// ---- Messages ----
+
+message MsgCreateAsuransi {
+  string creator = 1;
+  string jamaah = 2;
+  string policy_type = 3;
+  string premium = 4;
+  string coverage = 5;
+  string start_date = 6;
+  string end_date = 7;
+  string document_hash = 8;
+  string provider = 9;
+}
+
+message MsgCreateAsuransiResponse {
+  uint64 id = 1;
+}
+
+message MsgUpdateAsuransiStatus {
+  string creator = 1;
+  uint64 id = 2;
+  string status = 3;
+}
+
+message MsgUpdateAsuransiStatusResponse {}
+
+message MsgSubmitClaim {
+  string creator = 1;
+  uint64 asuransi_id = 2;
+  string reason = 3;
+  string amount = 4;
+  string evidence_hash = 5;
+}
+
+message MsgSubmitClaimResponse {
+  uint64 claim_id = 1;
+}
+
+message MsgDecideClaim {
+  string creator = 1;
+  uint64 claim_id = 2;
+  string status = 3;      // approved, rejected
+  string note = 4;
+}
+
+message MsgDecideClaimResponse {}
+
+// ---- Queries ----
+
+message QueryGetAsuransiRequest {
+  uint64 id = 1;
+}
+
+message QueryGetAsuransiResponse {
+  Asuransi asuransi = 1;
+}
+
+message QueryAllAsuransiRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllAsuransiResponse {
+  repeated Asuransi asuransi = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetClaimRequest {
+  uint64 id = 1;
+}
+
+message QueryGetClaimResponse {
+  AsuransiClaim claim = 1;
+}
+
+message QueryAllClaimRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllClaimResponse {
+  repeated AsuransiClaim claim = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}

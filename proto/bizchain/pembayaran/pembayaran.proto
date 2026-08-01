@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package bizchain.pembayaran;
+
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/pembayaran/types";
+
+// Installment represents a periodic payment (cicilan)
+message Installment {
+  uint64 id = 1;
+  string amount = 2 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string due_date = 3;
+  string paid_at = 4;
+  bool paid = 5;
+  string late_fee = 6 [(cosmos_proto.scalar) = "cosmos.Int"];
+}
+
+// EscrowStage tracks escrow release progress (visa, tiket, hotel)
+message EscrowStage {
+  string name = 1;             // visa, tiket, hotel
+  string amount = 2 [(cosmos_proto.scalar) = "cosmos.Int"];
+  bool released = 3;
+  string released_at = 4;
+}
+
+// Pembayaran represents an escrow payment for a paket
+message Pembayaran {
+  uint64 id = 1;
+  string jamaah = 2;
+  uint64 paket_id = 3;
+  string total = 4 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string down_payment = 5 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string paid = 6 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string remaining = 7 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string status = 8;           // pending, dp_paid, active, completed, refunded, cancelled
+  string payment_method = 9;   // transfer, qris, cash
+  repeated Installment installments = 10;
+  repeated EscrowStage escrow_stages = 11;
+  string creator = 12;
+  string created_at = 13;
+  string updated_at = 14;
+}
+
+// Params defines the parameters for the pembayaran module
+message Params {
+  bool zero_fee_enabled = 1;
+}
+
+// GenesisState defines the genesis state of the pembayaran module
+message GenesisState {
+  repeated Pembayaran pembayaran_list = 1;
+  uint64 pembayaran_count = 2;
+  uint64 installment_count = 3;
+  Params params = 4;
+}

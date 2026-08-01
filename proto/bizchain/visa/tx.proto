@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package bizchain.visa;
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "google/api/annotations.proto";
+import "bizchain/visa/visa.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/visa/types";
+
+// Msg defines the visa module Msg service
+service Msg {
+  // CreateVisa starts a visa application
+  rpc CreateVisa(MsgCreateVisa) returns (MsgCreateVisaResponse);
+  // UpdateVisaStatus updates visa processing status
+  rpc UpdateVisaStatus(MsgUpdateVisaStatus) returns (MsgUpdateVisaStatusResponse);
+}
+
+// Query defines the visa module Query service
+service Query {
+  // Visa queries a visa by ID
+  rpc Visa(QueryGetVisaRequest) returns (QueryGetVisaResponse) {
+    option (google.api.http) = { get: "/bizchain/visa/visa/{id}" };
+  }
+  // VisaAll queries all visas
+  rpc VisaAll(QueryAllVisaRequest) returns (QueryAllVisaResponse) {
+    option (google.api.http) = { get: "/bizchain/visa/visa" };
+  }
+}
+
+// ---- Messages ----
+
+message MsgCreateVisa {
+  string creator = 1;
+  string jamaah = 2;
+  uint64 paket_id = 3;
+  string document_hash = 4;
+  string notes = 5;
+}
+
+message MsgCreateVisaResponse {
+  uint64 id = 1;
+}
+
+message MsgUpdateVisaStatus {
+  string creator = 1;
+  uint64 id = 2;
+  string status = 3;   // processing, issued, rejected, expired
+  string visa_number = 4;
+  string issue_date = 5;
+  string expiry_date = 6;
+}
+
+message MsgUpdateVisaStatusResponse {}
+
+// ---- Queries ----
+
+message QueryGetVisaRequest {
+  uint64 id = 1;
+}
+
+message QueryGetVisaResponse {
+  Visa visa = 1;
+}
+
+message QueryAllVisaRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllVisaResponse {
+  repeated Visa visa = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}

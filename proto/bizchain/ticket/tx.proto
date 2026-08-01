@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+package bizchain.ticket;
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "google/api/annotations.proto";
+import "bizchain/ticket/ticket.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/ticket/types";
+
+// Msg defines the ticket module Msg service
+service Msg {
+  // IssueTicket issues an NFT ticket for a jamaah
+  rpc IssueTicket(MsgIssueTicket) returns (MsgIssueTicketResponse);
+  // UpdateTicketStatus updates ticket status (checked_in, boarded, etc)
+  rpc UpdateTicketStatus(MsgUpdateTicketStatus) returns (MsgUpdateTicketStatusResponse);
+}
+
+// Query defines the ticket module Query service
+service Query {
+  // Ticket queries a ticket by ID
+  rpc Ticket(QueryGetTicketRequest) returns (QueryGetTicketResponse) {
+    option (google.api.http) = { get: "/bizchain/ticket/ticket/{id}" };
+  }
+  // TicketAll queries all tickets
+  rpc TicketAll(QueryAllTicketRequest) returns (QueryAllTicketResponse) {
+    option (google.api.http) = { get: "/bizchain/ticket/ticket" };
+  }
+}
+
+// ---- Messages ----
+
+message MsgIssueTicket {
+  string creator = 1;
+  string jamaah = 2;
+  uint64 paket_id = 3;
+  string airline = 4;
+  string flight_number = 5;
+  string seat = 6;
+  string schedule = 7;
+  string qr_code = 8;
+  string document_hash = 9;
+}
+
+message MsgIssueTicketResponse {
+  uint64 id = 1;
+  string nft_id = 2;
+}
+
+message MsgUpdateTicketStatus {
+  string creator = 1;
+  uint64 id = 2;
+  string status = 3;   // issued, checked_in, boarded, used, void
+}
+
+message MsgUpdateTicketStatusResponse {}
+
+// ---- Queries ----
+
+message QueryGetTicketRequest {
+  uint64 id = 1;
+}
+
+message QueryGetTicketResponse {
+  Ticket ticket = 1;
+}
+
+message QueryAllTicketRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllTicketResponse {
+  repeated Ticket ticket = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}

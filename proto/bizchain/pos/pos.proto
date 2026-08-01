@@ -1,0 +1,130 @@
+syntax = "proto3";
+
+package bizchain.pos;
+
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/pos/types";
+
+// Unit represents a unit of measure for products (multi satuan)
+message Unit {
+  uint64 id = 1;
+  string name = 2;              // e.g. "Dus", "Pcs", "Karton"
+  string symbol = 3;            // e.g. "dus", "pcs", "ktn"
+  uint64 conversion_factor = 4; // 1 unit = N base unit
+  bool is_base = 5;             // true if this is the base unit
+}
+
+// PriceLevel represents a tiered price for a product (laporan harga level)
+message PriceLevel {
+  string level = 1;              // e.g. "ecer", "grosir", "member"
+  string price = 2 [(cosmos_proto.scalar) = "cosmos.Int"];
+  uint64 min_quantity = 3;       // minimum quantity to qualify for this level
+}
+
+// BundleComponent is a component of a composite product (barang gabungan)
+message BundleComponent {
+  uint64 product_id = 1;
+  uint64 quantity = 2;
+}
+
+// Product represents a product in the POS system
+message Product {
+  uint64 id = 1;
+  string name = 2;
+  string description = 3;
+  string price = 4 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string cost_price = 5 [(cosmos_proto.scalar) = "cosmos.Int"]; // HPP (modal)
+  string sku = 6;
+  string category = 7;
+  string image_url = 8;
+  uint64 stock = 9;              // stok dalam base unit
+  string owner = 10;
+  bool active = 11;
+  string created_at = 12;
+  string updated_at = 13;
+  uint64 base_unit_id = 14;      // satuan dasar
+  repeated PriceLevel price_levels = 15;    // harga per level
+  bool is_bundle = 16;           // barang gabungan
+  repeated BundleComponent components = 17; // komponen bila bundle
+  string barcode = 18;
+  uint64 min_stock = 19;         // stok minimum (low stock alert)
+  string branch_id = 20;         // ID cabang (multi-cabang support)
+}
+
+// Transaction represents a POS transaction (sale)
+message Transaction {
+  uint64 id = 1;
+  string seller = 2;
+  string customer_address = 3;
+  repeated Item items = 4;
+  string total = 5 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string discount = 6 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string tax = 7 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string grand_total = 8 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string payment_method = 9;     // cash, qris, transfer, credit
+  string status = 10;            // pending, completed, cancelled
+  string note = 11;
+  string created_at = 12;
+  string updated_at = 13;
+  uint64 journal_id = 14;        // referensi jurnal akuntansi
+  string branch_id = 15;         // ID cabang (multi-cabang support)
+}
+
+// Item represents an item in a transaction
+message Item {
+  uint64 product_id = 1;
+  uint64 quantity = 2;           // qty dalam satuan transaksi
+  uint64 unit_id = 3;            // satuan yang dipakai (0 = base)
+  string price = 4 [(cosmos_proto.scalar) = "cosmos.Int"]; // harga per unit
+  string subtotal = 5 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string cost = 6 [(cosmos_proto.scalar) = "cosmos.Int"];  // HPP per unit
+}
+
+// Account represents a chart of accounts entry (akuntansi)
+message Account {
+  uint64 id = 1;
+  string code = 2;               // e.g. "1100"
+  string name = 3;               // e.g. "Kas"
+  string type = 4;               // asset, liability, equity, revenue, expense
+  string description = 5;
+  string created_at = 6;
+}
+
+// JournalLine is a single line in a journal entry (double-entry)
+message JournalLine {
+  uint64 account_id = 1;
+  string debit = 2 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string credit = 3 [(cosmos_proto.scalar) = "cosmos.Int"];
+}
+
+// JournalEntry represents a general journal entry (akuntansi)
+message JournalEntry {
+  uint64 id = 1;
+  string reference_type = 2;     // sale, stock_in, stock_out, adjustment, manual
+  uint64 reference_id = 3;
+  string description = 4;
+  repeated JournalLine lines = 5;
+  string created_at = 6;
+  string creator = 7;
+}
+
+// Params defines the parameters for the POS module
+message Params {
+  bool zero_fee_enabled = 1;
+}
+
+// GenesisState defines the genesis state of the POS module
+message GenesisState {
+  repeated Product product_list = 1;
+  repeated Transaction transaction_list = 2;
+  repeated Unit unit_list = 3;
+  repeated Account account_list = 4;
+  repeated JournalEntry journal_list = 5;
+  uint64 product_count = 6;
+  uint64 transaction_count = 7;
+  uint64 unit_count = 8;
+  uint64 account_count = 9;
+  uint64 journal_count = 10;
+  Params params = 11;
+}

@@ -1,0 +1,128 @@
+syntax = "proto3";
+
+package bizchain.oleholeh;
+
+import "cosmos_proto/cosmos.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "google/api/annotations.proto";
+import "bizchain/oleholeh/oleholeh.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/oleholeh/types";
+
+// Msg defines the oleholeh module Msg service
+service Msg {
+  // CreateProduct registers a souvenir product
+  rpc CreateProduct(MsgCreateProduct) returns (MsgCreateProductResponse);
+  // UpdateProduct updates a souvenir product
+  rpc UpdateProduct(MsgUpdateProduct) returns (MsgUpdateProductResponse);
+  // OrderProduct places a pre-order paid via wallet
+  rpc OrderProduct(MsgOrderProduct) returns (MsgOrderProductResponse);
+  // UpdateOrderStatus updates an order status (paid, shipped, delivered)
+  rpc UpdateOrderStatus(MsgUpdateOrderStatus) returns (MsgUpdateOrderStatusResponse);
+}
+
+// Query defines the oleholeh module Query service
+service Query {
+  // Product queries a product by ID
+  rpc Product(QueryGetProductRequest) returns (QueryGetProductResponse) {
+    option (google.api.http) = { get: "/bizchain/oleholeh/product/{id}" };
+  }
+  // ProductAll queries all products
+  rpc ProductAll(QueryAllProductRequest) returns (QueryAllProductResponse) {
+    option (google.api.http) = { get: "/bizchain/oleholeh/product" };
+  }
+  // Order queries an order by ID
+  rpc Order(QueryGetOrderRequest) returns (QueryGetOrderResponse) {
+    option (google.api.http) = { get: "/bizchain/oleholeh/order/{id}" };
+  }
+  // OrderAll queries all orders
+  rpc OrderAll(QueryAllOrderRequest) returns (QueryAllOrderResponse) {
+    option (google.api.http) = { get: "/bizchain/oleholeh/order" };
+  }
+}
+
+// ---- Messages ----
+
+message MsgCreateProduct {
+  string creator = 1;
+  string name = 2;
+  string description = 3;
+  string price = 4;
+  string image_url = 5;
+  uint64 stock = 6;
+  string category = 7;
+}
+
+message MsgCreateProductResponse {
+  uint64 id = 1;
+}
+
+message MsgUpdateProduct {
+  string creator = 1;
+  uint64 id = 2;
+  string name = 3;
+  string description = 4;
+  string price = 5;
+  string image_url = 6;
+  uint64 stock = 7;
+  string category = 8;
+  string status = 9;
+}
+
+message MsgUpdateProductResponse {}
+
+message MsgOrderProduct {
+  string creator = 1;
+  uint64 product_id = 2;
+  uint64 quantity = 3;
+  string shipping_address = 4;
+}
+
+message MsgOrderProductResponse {
+  uint64 order_id = 1;
+  string total = 2;
+}
+
+message MsgUpdateOrderStatus {
+  string creator = 1;
+  uint64 order_id = 2;
+  string status = 3;    // paid, shipped, delivered, cancelled
+}
+
+message MsgUpdateOrderStatusResponse {}
+
+// ---- Queries ----
+
+message QueryGetProductRequest {
+  uint64 id = 1;
+}
+
+message QueryGetProductResponse {
+  OlehOlehProduct product = 1;
+}
+
+message QueryAllProductRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllProductResponse {
+  repeated OlehOlehProduct product = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetOrderRequest {
+  uint64 id = 1;
+}
+
+message QueryGetOrderResponse {
+  OlehOlehOrder order = 1;
+}
+
+message QueryAllOrderRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllOrderResponse {
+  repeated OlehOlehOrder order = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}

@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package bizchain.referral;
+
+import "cosmos_proto/cosmos.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "google/api/annotations.proto";
+import "bizchain/referral/referral.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/referral/types";
+
+// Msg defines the referral module Msg service
+service Msg {
+  // CreateReferral records a referral relationship
+  rpc CreateReferral(MsgCreateReferral) returns (MsgCreateReferralResponse);
+  // SettleReferral pays out commission to the agent
+  rpc SettleReferral(MsgSettleReferral) returns (MsgSettleReferralResponse);
+}
+
+// Query defines the referral module Query service
+service Query {
+  // Referral queries a referral by ID
+  rpc Referral(QueryGetReferralRequest) returns (QueryGetReferralResponse) {
+    option (google.api.http) = { get: "/bizchain/referral/referral/{id}" };
+  }
+  // ReferralAll queries all referrals
+  rpc ReferralAll(QueryAllReferralRequest) returns (QueryAllReferralResponse) {
+    option (google.api.http) = { get: "/bizchain/referral/referral" };
+  }
+  // ReferralByAgent queries referrals of an agent
+  rpc ReferralByAgent(QueryByAgentRequest) returns (QueryAllReferralResponse) {
+    option (google.api.http) = { get: "/bizchain/referral/by_agent/{agent}" };
+  }
+}
+
+// ---- Messages ----
+
+message MsgCreateReferral {
+  string creator = 1;
+  string agent = 2;
+  string referred_jamaah = 3;
+  uint64 paket_id = 4;
+  string commission_rate = 5 [(cosmos_proto.scalar) = "cosmos.Int"]; // basis poin (50 = 5%)
+}
+
+message MsgCreateReferralResponse {
+  uint64 id = 1;
+}
+
+message MsgSettleReferral {
+  string creator = 1;
+  uint64 id = 2;
+}
+
+message MsgSettleReferralResponse {
+  string commission = 1 [(cosmos_proto.scalar) = "cosmos.Int"];
+}
+
+// ---- Queries ----
+
+message QueryGetReferralRequest {
+  uint64 id = 1;
+}
+
+message QueryGetReferralResponse {
+  Referral referral = 1;
+}
+
+message QueryAllReferralRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllReferralResponse {
+  repeated Referral referral = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryByAgentRequest {
+  string agent = 1;
+}

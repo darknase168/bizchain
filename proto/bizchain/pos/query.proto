@@ -1,0 +1,272 @@
+syntax = "proto3";
+
+package bizchain.pos;
+
+import "cosmos_proto/cosmos.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "google/api/annotations.proto";
+import "bizchain/pos/pos.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/pos/types";
+
+// Query defines the gRPC querier service
+service Query {
+  // Product queries a product by ID
+  rpc Product(QueryGetProductRequest) returns (QueryGetProductResponse) {
+    option (google.api.http) = { get: "/bizchain/pos/product/{id}" };
+  }
+  // ProductAll queries all products
+  rpc ProductAll(QueryAllProductRequest) returns (QueryAllProductResponse) {
+    option (google.api.http) = { get: "/bizchain/pos/product" };
+  }
+  // Transaction queries a transaction by ID
+  rpc Transaction(QueryGetTransactionRequest) returns (QueryGetTransactionResponse) {
+    option (google.api.http) = { get: "/bizchain/pos/transaction/{id}" };
+  }
+  // TransactionAll queries all transactions
+  rpc TransactionAll(QueryAllTransactionRequest) returns (QueryAllTransactionResponse) {
+    option (google.api.http) = { get: "/bizchain/pos/transaction" };
+  }
+  // Params queries the POS module parameters
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http) = { get: "/bizchain/pos/params" };
+  }
+  // Unit queries a unit of measure by ID
+  rpc Unit(QueryGetUnitRequest) returns (QueryGetUnitResponse) {
+    option (google.api.http) = { get: "/bizchain/pos/unit/{id}" };
+  }
+  // UnitAll queries all units of measure
+  rpc UnitAll(QueryAllUnitRequest) returns (QueryAllUnitResponse) {
+    option (google.api.http) = { get: "/bizchain/pos/unit" };
+  }
+  // Account queries an account by ID
+  rpc Account(QueryGetAccountRequest) returns (QueryGetAccountResponse) {
+    option (google.api.http) = { get: "/bizchain/pos/account/{id}" };
+  }
+  // AccountAll queries all accounts
+  rpc AccountAll(QueryAllAccountRequest) returns (QueryAllAccountResponse) {
+    option (google.api.http) = { get: "/bizchain/pos/account" };
+  }
+  // JournalEntry queries a journal entry by ID
+  rpc JournalEntry(QueryGetJournalEntryRequest) returns (QueryGetJournalEntryResponse) {
+    option (google.api.http) = { get: "/bizchain/pos/journal_entry/{id}" };
+  }
+  // JournalEntryAll queries all journal entries
+  rpc JournalEntryAll(QueryAllJournalEntryRequest) returns (QueryAllJournalEntryResponse) {
+    option (google.api.http) = { get: "/bizchain/pos/journal_entry" };
+  }
+  // TrialBalance returns the trial balance (akuntansi)
+  rpc TrialBalance(QueryTrialBalanceRequest) returns (QueryTrialBalanceResponse) {
+    option (google.api.http) = { get: "/bizchain/pos/trial_balance" };
+  }
+  // IncomeStatement returns the income statement / laba rugi (akuntansi)
+  rpc IncomeStatement(QueryIncomeStatementRequest) returns (QueryIncomeStatementResponse) {
+    option (google.api.http) = { get: "/bizchain/pos/income_statement" };
+  }
+  // BalanceSheet returns the balance sheet / neraca (akuntansi)
+  rpc BalanceSheet(QueryBalanceSheetRequest) returns (QueryBalanceSheetResponse) {
+    option (google.api.http) = { get: "/bizchain/pos/balance_sheet" };
+  }
+  // Ledger returns the general ledger for an account (akuntansi)
+  rpc Ledger(QueryLedgerRequest) returns (QueryLedgerResponse) {
+    option (google.api.http) = { get: "/bizchain/pos/ledger/{account_id}" };
+  }
+  // PriceLevelReport returns the price level report per product
+  rpc PriceLevelReport(QueryPriceLevelReportRequest) returns (QueryPriceLevelReportResponse) {
+    option (google.api.http) = { get: "/bizchain/pos/price_level_report" };
+  }
+  // ProductByBranch returns all products for a specific branch
+  rpc ProductByBranch(QueryProductByBranchRequest) returns (QueryProductByBranchResponse) {
+    option (google.api.http) = { get: "/bizchain/pos/product_by_branch/{branch_id}" };
+  }
+  // TransactionByBranch returns all transactions for a specific branch
+  rpc TransactionByBranch(QueryTransactionByBranchRequest) returns (QueryTransactionByBranchResponse) {
+    option (google.api.http) = { get: "/bizchain/pos/transaction_by_branch/{branch_id}" };
+  }
+}
+
+message QueryGetProductRequest {
+  uint64 id = 1;
+}
+
+message QueryGetProductResponse {
+  bizchain.pos.Product product = 1;
+}
+
+message QueryAllProductRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllProductResponse {
+  repeated bizchain.pos.Product product = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetTransactionRequest {
+  uint64 id = 1;
+}
+
+message QueryGetTransactionResponse {
+  bizchain.pos.Transaction transaction = 1;
+}
+
+message QueryAllTransactionRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllTransactionResponse {
+  repeated bizchain.pos.Transaction transaction = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryParamsRequest {}
+
+message QueryParamsResponse {
+  bizchain.pos.Params params = 1;
+}
+
+message QueryGetUnitRequest {
+  uint64 id = 1;
+}
+
+message QueryGetUnitResponse {
+  bizchain.pos.Unit unit = 1;
+}
+
+message QueryAllUnitRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllUnitResponse {
+  repeated bizchain.pos.Unit unit = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetAccountRequest {
+  uint64 id = 1;
+}
+
+message QueryGetAccountResponse {
+  bizchain.pos.Account account = 1;
+}
+
+message QueryAllAccountRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllAccountResponse {
+  repeated bizchain.pos.Account account = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetJournalEntryRequest {
+  uint64 id = 1;
+}
+
+message QueryGetJournalEntryResponse {
+  bizchain.pos.JournalEntry journal_entry = 1;
+}
+
+message QueryAllJournalEntryRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllJournalEntryResponse {
+  repeated bizchain.pos.JournalEntry journal_entry = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// ---- Accounting Reports (Akuntansi) ----
+
+message QueryTrialBalanceRequest {}
+
+message AccountBalance {
+  uint64 account_id = 1;
+  string code = 2;
+  string name = 3;
+  string type = 4;
+  string debit = 5 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string credit = 6 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string balance = 7 [(cosmos_proto.scalar) = "cosmos.Int"];
+}
+
+message QueryTrialBalanceResponse {
+  repeated AccountBalance accounts = 1;
+  string total_debit = 2 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string total_credit = 3 [(cosmos_proto.scalar) = "cosmos.Int"];
+}
+
+message QueryIncomeStatementRequest {}
+
+message QueryIncomeStatementResponse {
+  repeated AccountBalance revenues = 1;
+  repeated AccountBalance expenses = 2;
+  string total_revenue = 3 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string total_expense = 4 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string net_income = 5 [(cosmos_proto.scalar) = "cosmos.Int"];
+}
+
+message QueryBalanceSheetRequest {}
+
+message QueryBalanceSheetResponse {
+  repeated AccountBalance assets = 1;
+  repeated AccountBalance liabilities = 2;
+  repeated AccountBalance equities = 3;
+  string total_assets = 4 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string total_liabilities = 5 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string total_equity = 6 [(cosmos_proto.scalar) = "cosmos.Int"];
+}
+
+message QueryLedgerRequest {
+  uint64 account_id = 1;
+}
+
+message LedgerLine {
+  uint64 journal_entry_id = 1;
+  string reference_type = 2;
+  uint64 reference_id = 3;
+  string description = 4;
+  string debit = 5 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string credit = 6 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string balance = 7 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string created_at = 8;
+}
+
+message QueryLedgerResponse {
+  bizchain.pos.Account account = 1;
+  repeated LedgerLine lines = 2;
+  string ending_balance = 3 [(cosmos_proto.scalar) = "cosmos.Int"];
+}
+
+// ---- Price Level Report (Laporan Harga Level) ----
+
+message QueryPriceLevelReportRequest {}
+
+message PriceLevelReportItem {
+  uint64 product_id = 1;
+  string product_name = 2;
+  string sku = 3;
+  string base_price = 4 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string base_unit = 5;
+  repeated bizchain.pos.PriceLevel price_levels = 6;
+}
+
+message QueryPriceLevelReportResponse {
+  repeated PriceLevelReportItem items = 1;
+}
+
+message QueryProductByBranchRequest {
+  string branch_id = 1;
+}
+
+message QueryProductByBranchResponse {
+  repeated bizchain.pos.Product product = 1;
+}
+
+message QueryTransactionByBranchRequest {
+  string branch_id = 1;
+}
+
+message QueryTransactionByBranchResponse {
+  repeated bizchain.pos.Transaction transaction = 1;
+}

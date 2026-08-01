@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package bizchain.hotel;
+
+import "cosmos_proto/cosmos.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "google/api/annotations.proto";
+import "bizchain/hotel/hotel.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/hotel/types";
+
+// Msg defines the hotel module Msg service
+service Msg {
+  // CreateHotel registers a new hotel
+  rpc CreateHotel(MsgCreateHotel) returns (MsgCreateHotelResponse);
+  // UpdateHotel updates hotel data
+  rpc UpdateHotel(MsgUpdateHotel) returns (MsgUpdateHotelResponse);
+}
+
+// Query defines the hotel module Query service
+service Query {
+  // Hotel queries a hotel by ID
+  rpc Hotel(QueryGetHotelRequest) returns (QueryGetHotelResponse) {
+    option (google.api.http) = { get: "/bizchain/hotel/hotel/{id}" };
+  }
+  // HotelAll queries all hotels
+  rpc HotelAll(QueryAllHotelRequest) returns (QueryAllHotelResponse) {
+    option (google.api.http) = { get: "/bizchain/hotel/hotel" };
+  }
+}
+
+// ---- Messages ----
+
+message MsgCreateHotel {
+  string creator = 1;
+  string name = 2;
+  string city = 3;
+  string address = 4;
+  string star_rating = 5;
+  string price_per_night = 6 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string room_type = 7;
+  uint64 available_rooms = 8;
+  string distance_haram = 9;
+}
+
+message MsgCreateHotelResponse {
+  uint64 id = 1;
+}
+
+message MsgUpdateHotel {
+  string creator = 1;
+  uint64 id = 2;
+  string name = 3;
+  string city = 4;
+  string address = 5;
+  string star_rating = 6;
+  string price_per_night = 7 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string room_type = 8;
+  uint64 available_rooms = 9;
+  string distance_haram = 10;
+  string status = 11;
+}
+
+message MsgUpdateHotelResponse {}
+
+// ---- Queries ----
+
+message QueryGetHotelRequest {
+  uint64 id = 1;
+}
+
+message QueryGetHotelResponse {
+  Hotel hotel = 1;
+}
+
+message QueryAllHotelRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllHotelResponse {
+  repeated Hotel hotel = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}

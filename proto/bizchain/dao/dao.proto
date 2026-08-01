@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package bizchain.dao;
+
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/dao/types";
+
+// Vote represents a single vote on a proposal
+message Vote {
+  string voter = 1;
+  string option = 2;
+  string weight = 3;      // voting weight (1 per member by default)
+  string voted_at = 4;
+}
+
+// DaoProposal represents a DAO proposal for organization/association decisions
+message DaoProposal {
+  uint64 id = 1;
+  string title = 2;
+  string description = 3;
+  repeated string options = 4;
+  repeated Vote votes = 5;
+  string deadline = 6;
+  string status = 7;        // active, closed, passed, rejected
+  string result_option = 8;
+  string creator = 9;
+  string created_at = 10;
+  string closed_at = 11;
+}
+
+// Params defines the parameters for the dao module
+message Params {
+  bool zero_fee_enabled = 1;
+}
+
+// GenesisState defines the genesis state of the dao module
+message GenesisState {
+  repeated DaoProposal proposal_list = 1;
+  uint64 proposal_count = 2;
+  Params params = 3;
+}

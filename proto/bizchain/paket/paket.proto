@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package bizchain.paket;
+
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/paket/types";
+
+// Review represents a rating/review for a paket (marketplace)
+message Review {
+  string reviewer = 1;
+  uint32 rating = 2;       // 1-5
+  string comment = 3;
+  string created_at = 4;
+}
+
+// Paket represents a Hajj/Umroh package (smart contract paket)
+message Paket {
+  uint64 id = 1;
+  string name = 2;
+  string price = 3 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string schedule = 4;         // e.g. "2026-01-15 s/d 2026-02-05"
+  uint64 quota = 5;
+  uint64 booked = 6;           // auto-updated on booking; closes at quota
+  string hotel = 7;
+  string airline = 8;
+  string muthawif = 9;
+  string status = 10;          // open, full, closed, departed, completed
+  string departure_date = 11;
+  string return_date = 12;
+  string category = 13;        // haji, umroh, haji_plus
+  string description = 14;
+  string image_url = 15;
+  repeated Review reviews = 16;
+  string creator = 17;
+  string created_at = 18;
+  string updated_at = 19;
+}
+
+// Params defines the parameters for the paket module
+message Params {
+  bool zero_fee_enabled = 1;
+}
+
+// GenesisState defines the genesis state of the paket module
+message GenesisState {
+  repeated Paket paket_list = 1;
+  uint64 paket_count = 2;
+  Params params = 3;
+}

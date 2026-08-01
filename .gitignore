@@ -1,0 +1,52 @@
+# Binaries
+build/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Go
+*.test
+*.out
+vendor/
+
+# Blockchain data
+.bizchain/
+*.db
+*.log
+
+# Node modules
+node_modules/
+wallet/node_modules/
+
+# Build outputs
+wallet/dist/
+wallet/build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+coverage/
+
+# Temporary files
+*.tmp
+*.temp

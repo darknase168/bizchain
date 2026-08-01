@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package bizchain.reward;
+
+import "cosmos_proto/cosmos.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "google/api/annotations.proto";
+import "bizchain/reward/reward.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/reward/types";
+
+// Msg defines the reward module Msg service
+service Msg {
+  // AwardReward awards loyalty tokens to a jamaah
+  rpc AwardReward(MsgAwardReward) returns (MsgAwardRewardResponse);
+  // RedeemReward redeems loyalty tokens
+  rpc RedeemReward(MsgRedeemReward) returns (MsgRedeemRewardResponse);
+}
+
+// Query defines the reward module Query service
+service Query {
+  // Balance queries a jamaah's loyalty balance
+  rpc Balance(QueryBalanceRequest) returns (QueryBalanceResponse) {
+    option (google.api.http) = { get: "/bizchain/reward/balance/{jamaah}" };
+  }
+  // Reward queries a reward by ID
+  rpc Reward(QueryGetRewardRequest) returns (QueryGetRewardResponse) {
+    option (google.api.http) = { get: "/bizchain/reward/reward/{id}" };
+  }
+  // RewardAll queries all rewards
+  rpc RewardAll(QueryAllRewardRequest) returns (QueryAllRewardResponse) {
+    option (google.api.http) = { get: "/bizchain/reward/reward" };
+  }
+}
+
+// ---- Messages ----
+
+message MsgAwardReward {
+  string creator = 1;
+  string jamaah = 2;
+  string points = 3 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string reward_type = 4;   // cashback, discount, referral_bonus
+  string reason = 5;
+}
+
+message MsgAwardRewardResponse {
+  uint64 id = 1;
+}
+
+message MsgRedeemReward {
+  string creator = 1;
+  string jamaah = 2;
+  string points = 3 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string reason = 4;
+}
+
+message MsgRedeemRewardResponse {}
+
+// ---- Queries ----
+
+message QueryBalanceRequest {
+  string jamaah = 1;
+}
+
+message QueryBalanceResponse {
+  RewardBalance balance = 1;
+}
+
+message QueryGetRewardRequest {
+  uint64 id = 1;
+}
+
+message QueryGetRewardResponse {
+  Reward reward = 1;
+}
+
+message QueryAllRewardRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllRewardResponse {
+  repeated Reward reward = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}

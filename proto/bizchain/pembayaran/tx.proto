@@ -1,0 +1,117 @@
+syntax = "proto3";
+
+package bizchain.pembayaran;
+
+import "cosmos_proto/cosmos.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "google/api/annotations.proto";
+import "bizchain/pembayaran/pembayaran.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/pembayaran/types";
+
+// Msg defines the pembayaran module Msg service
+service Msg {
+  // CreatePembayaran creates a new escrow payment (DP)
+  rpc CreatePembayaran(MsgCreatePembayaran) returns (MsgCreatePembayaranResponse);
+  // PayInstallment records an installment payment (cicilan)
+  rpc PayInstallment(MsgPayInstallment) returns (MsgPayInstallmentResponse);
+  // ReleaseEscrow releases escrow funds for a stage (visa, tiket, hotel)
+  rpc ReleaseEscrow(MsgReleaseEscrow) returns (MsgReleaseEscrowResponse);
+  // RefundPembayaran refunds an escrow payment
+  rpc RefundPembayaran(MsgRefundPembayaran) returns (MsgRefundPembayaranResponse);
+  // CancelPembayaran cancels a pending payment
+  rpc CancelPembayaran(MsgCancelPembayaran) returns (MsgCancelPembayaranResponse);
+}
+
+// Query defines the pembayaran module Query service
+service Query {
+  // Pembayaran queries a payment by ID
+  rpc Pembayaran(QueryGetPembayaranRequest) returns (QueryGetPembayaranResponse) {
+    option (google.api.http) = { get: "/bizchain/pembayaran/pembayaran/{id}" };
+  }
+  // PembayaranAll queries all payments
+  rpc PembayaranAll(QueryAllPembayaranRequest) returns (QueryAllPembayaranResponse) {
+    option (google.api.http) = { get: "/bizchain/pembayaran/pembayaran" };
+  }
+  // PembayaranByJamaah queries payments of a jamaah
+  rpc PembayaranByJamaah(QueryByJamaahRequest) returns (QueryAllPembayaranResponse) {
+    option (google.api.http) = { get: "/bizchain/pembayaran/by_jamaah/{jamaah}" };
+  }
+}
+
+// ---- Messages ----
+
+message MsgCreatePembayaran {
+  string creator = 1;
+  string jamaah = 2;
+  uint64 paket_id = 3;
+  string total = 4 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string down_payment = 5 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string payment_method = 6;
+  uint32 installment_count = 7;
+  repeated string installment_due_dates = 8; // tanggal jatuh tempo tiap cicilan
+  repeated EscrowStage escrow_stages = 9;    // visa, tiket, hotel
+}
+
+message MsgCreatePembayaranResponse {
+  uint64 id = 1;
+}
+
+message MsgPayInstallment {
+  string creator = 1;
+  uint64 pembayaran_id = 2;
+  uint64 installment_id = 3;
+  string amount = 4 [(cosmos_proto.scalar) = "cosmos.Int"];
+}
+
+message MsgPayInstallmentResponse {
+  string paid = 1 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string remaining = 2 [(cosmos_proto.scalar) = "cosmos.Int"];
+  bool completed = 3;
+}
+
+message MsgReleaseEscrow {
+  string creator = 1;
+  uint64 pembayaran_id = 2;
+  string stage_name = 3;   // visa, tiket, hotel
+}
+
+message MsgReleaseEscrowResponse {}
+
+message MsgRefundPembayaran {
+  string creator = 1;
+  uint64 pembayaran_id = 2;
+  string reason = 3;
+}
+
+message MsgRefundPembayaranResponse {}
+
+message MsgCancelPembayaran {
+  string creator = 1;
+  uint64 pembayaran_id = 2;
+}
+
+message MsgCancelPembayaranResponse {}
+
+// ---- Queries ----
+
+message QueryGetPembayaranRequest {
+  uint64 id = 1;
+}
+
+message QueryGetPembayaranResponse {
+  Pembayaran pembayaran = 1;
+}
+
+message QueryAllPembayaranRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllPembayaranResponse {
+  repeated Pembayaran pembayaran = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryByJamaahRequest {
+  string jamaah = 1;
+}

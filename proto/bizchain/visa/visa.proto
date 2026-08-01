@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package bizchain.visa;
+
+option go_package = "github.com/bizchain/blockchain/x/visa/types";
+
+// Visa represents a visa application record
+message Visa {
+  uint64 id = 1;
+  string jamaah = 2;
+  uint64 paket_id = 3;
+  string status = 4;        // processing, issued, rejected, expired
+  string visa_number = 5;
+  string issue_date = 6;
+  string expiry_date = 7;
+  string document_hash = 8; // hash paspor yang digunakan
+  string notes = 9;
+  string creator = 10;
+  string created_at = 11;
+  string updated_at = 12;
+}
+
+// Params defines the parameters for the visa module
+message Params {
+  bool zero_fee_enabled = 1;
+}
+
+// GenesisState defines the genesis state of the visa module
+message GenesisState {
+  repeated Visa visa_list = 1;
+  uint64 visa_count = 2;
+  Params params = 3;
+}

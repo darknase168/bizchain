@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package bizchain.audit;
+
+import "cosmos_proto/cosmos.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "google/api/annotations.proto";
+import "bizchain/audit/audit.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/audit/types";
+
+// Msg defines the audit module Msg service
+service Msg {
+  // LogAction records an audit log entry (internal, may be restricted to agent authority)
+  rpc LogAction(MsgLogAction) returns (MsgLogActionResponse);
+}
+
+// Query defines the audit module Query service
+service Query {
+  // AuditLog queries an audit log by ID
+  rpc AuditLog(QueryGetAuditLogRequest) returns (QueryGetAuditLogResponse) {
+    option (google.api.http) = { get: "/bizchain/audit/audit_log/{id}" };
+  }
+  // AuditLogAll queries all audit logs (paginated)
+  rpc AuditLogAll(QueryAllAuditLogRequest) returns (QueryAllAuditLogResponse) {
+    option (google.api.http) = { get: "/bizchain/audit/audit_log" };
+  }
+  // AuditLogByModule queries audit logs filtered by module
+  rpc AuditLogByModule(QueryAuditLogByModuleRequest) returns (QueryAuditLogByModuleResponse) {
+    option (google.api.http) = { get: "/bizchain/audit/audit_log/by_module/{module}" };
+  }
+}
+
+// ---- Messages ----
+
+message MsgLogAction {
+  string creator = 1;
+  string module = 2;
+  string action = 3;
+  string actor = 4;
+  string target_id = 5;
+  string data_hash = 6;
+  string metadata = 7;
+}
+
+message MsgLogActionResponse {
+  uint64 id = 1;
+}
+
+// ---- Queries ----
+
+message QueryGetAuditLogRequest {
+  uint64 id = 1;
+}
+
+message QueryGetAuditLogResponse {
+  AuditLog audit_log = 1;
+}
+
+message QueryAllAuditLogRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllAuditLogResponse {
+  repeated AuditLog audit_log = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryAuditLogByModuleRequest {
+  string module = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryAuditLogByModuleResponse {
+  repeated AuditLog audit_log = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}

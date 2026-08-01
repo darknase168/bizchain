@@ -1,0 +1,124 @@
+syntax = "proto3";
+
+package bizchain.agen;
+
+import "cosmos_proto/cosmos.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "google/api/annotations.proto";
+import "bizchain/agen/agen.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/agen/types";
+
+// Msg defines the agen module Msg service
+service Msg {
+  // CreateAgen registers a new agent (pusat/cabang/subagen)
+  rpc CreateAgen(MsgCreateAgen) returns (MsgCreateAgenResponse);
+  // UpdateAgen updates agent data (level, parent, commission, status)
+  rpc UpdateAgen(MsgUpdateAgen) returns (MsgUpdateAgenResponse);
+  // AddComplaint files a complaint against an agent
+  rpc AddComplaint(MsgAddComplaint) returns (MsgAddComplaintResponse);
+  // ResolveComplaint resolves a complaint
+  rpc ResolveComplaint(MsgResolveComplaint) returns (MsgResolveComplaintResponse);
+  // RecordPerformance records agent performance and recomputes the score
+  rpc RecordPerformance(MsgRecordPerformance) returns (MsgRecordPerformanceResponse);
+}
+
+// Query defines the agen module Query service
+service Query {
+  // Agen queries an agent by ID
+  rpc Agen(QueryGetAgenRequest) returns (QueryGetAgenResponse) {
+    option (google.api.http) = { get: "/bizchain/agen/agen/{id}" };
+  }
+  // AgenAll queries all agents
+  rpc AgenAll(QueryAllAgenRequest) returns (QueryAllAgenResponse) {
+    option (google.api.http) = { get: "/bizchain/agen/agen" };
+  }
+  // Hierarki queries the downline tree of an agent
+  rpc Hierarki(QueryHierarkiRequest) returns (QueryHierarkiResponse) {
+    option (google.api.http) = { get: "/bizchain/agen/hierarki/{id}" };
+  }
+}
+
+// ---- Messages ----
+
+message MsgCreateAgen {
+  string creator = 1;
+  string address = 2;
+  string name = 3;
+  string parent_id = 4;          // "0" for pusat
+  string level = 5;              // pusat, cabang, subagen
+  string commission_rate = 6;
+}
+
+message MsgCreateAgenResponse {
+  uint64 id = 1;
+}
+
+message MsgUpdateAgen {
+  string creator = 1;
+  uint64 id = 2;
+  string name = 3;
+  string parent_id = 4;
+  string level = 5;
+  string commission_rate = 6;
+  string status = 7;
+}
+
+message MsgUpdateAgenResponse {}
+
+message MsgAddComplaint {
+  string creator = 1;
+  uint64 agen_id = 2;
+  string reason = 3;
+}
+
+message MsgAddComplaintResponse {
+  uint64 complaint_id = 1;
+}
+
+message MsgResolveComplaint {
+  string creator = 1;
+  uint64 agen_id = 2;
+  uint64 complaint_id = 3;
+  string resolution = 4;
+}
+
+message MsgResolveComplaintResponse {}
+
+message MsgRecordPerformance {
+  string creator = 1;
+  uint64 agen_id = 2;
+  string period = 3;       // YYYY-MM
+  uint64 sales = 4;
+  string volume = 5;
+  string rating_avg = 6;
+}
+
+message MsgRecordPerformanceResponse {}
+
+// ---- Queries ----
+
+message QueryGetAgenRequest {
+  uint64 id = 1;
+}
+
+message QueryGetAgenResponse {
+  Agen agen = 1;
+}
+
+message QueryAllAgenRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllAgenResponse {
+  repeated Agen agen = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryHierarkiRequest {
+  uint64 id = 1;
+}
+
+message QueryHierarkiResponse {
+  repeated Agen downline = 1;
+}

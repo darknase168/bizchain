@@ -1,0 +1,125 @@
+syntax = "proto3";
+
+package bizchain.keberangkatan;
+
+import "cosmos_proto/cosmos.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "google/api/annotations.proto";
+import "bizchain/keberangkatan/keberangkatan.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/keberangkatan/types";
+
+// Msg defines the keberangkatan module Msg service
+service Msg {
+  // CreateKeberangkatan starts tracking a pilgrim's departure journey (stage 1)
+  rpc CreateKeberangkatan(MsgCreateKeberangkatan) returns (MsgCreateKeberangkatanResponse);
+  // AdvanceStage advances a journey to the next stage (1-9)
+  rpc AdvanceStage(MsgAdvanceStage) returns (MsgAdvanceStageResponse);
+  // UpdateDeparture updates departure/return/manasik dates
+  rpc UpdateDeparture(MsgUpdateDeparture) returns (MsgUpdateDepartureResponse);
+  // AddBaggage adds a checked baggage item (QR/NFC tracking)
+  rpc AddBaggage(MsgAddBaggage) returns (MsgAddBaggageResponse);
+  // UpdateBaggageStatus updates baggage tracking status
+  rpc UpdateBaggageStatus(MsgUpdateBaggageStatus) returns (MsgUpdateBaggageStatusResponse);
+}
+
+// Query defines the keberangkatan module Query service
+service Query {
+  // Keberangkatan queries a journey by ID
+  rpc Keberangkatan(QueryGetKeberangkatanRequest) returns (QueryGetKeberangkatanResponse) {
+    option (google.api.http) = { get: "/bizchain/keberangkatan/keberangkatan/{id}" };
+  }
+  // KeberangkatanAll queries all journeys
+  rpc KeberangkatanAll(QueryAllKeberangkatanRequest) returns (QueryAllKeberangkatanResponse) {
+    option (google.api.http) = { get: "/bizchain/keberangkatan/keberangkatan" };
+  }
+  // KeberangkatanByJamaah queries journeys for a pilgrim
+  rpc KeberangkatanByJamaah(QueryKeberangkatanByJamaahRequest) returns (QueryKeberangkatanByJamaahResponse) {
+    option (google.api.http) = { get: "/bizchain/keberangkatan/keberangkatan/by_jamaah/{jamaah}" };
+  }
+}
+
+// ---- Messages ----
+
+message MsgCreateKeberangkatan {
+  string creator = 1;
+  string jamaah = 2;
+  uint64 paket_id = 3;
+  uint64 pembayaran_id = 4;
+  string departure_date = 5;
+  string return_date = 6;
+  string manasik_date = 7;
+}
+
+message MsgCreateKeberangkatanResponse {
+  uint64 id = 1;
+}
+
+message MsgAdvanceStage {
+  string creator = 1;
+  uint64 id = 2;
+}
+
+message MsgAdvanceStageResponse {
+  uint64 stage = 1;
+  string status_label = 2;
+}
+
+message MsgUpdateDeparture {
+  string creator = 1;
+  uint64 id = 2;
+  string departure_date = 3;
+  string return_date = 4;
+  string manasik_date = 5;
+  string hotel_confirm = 6;
+  string airline_confirm = 7;
+}
+
+message MsgUpdateDepartureResponse {}
+
+message MsgAddBaggage {
+  string creator = 1;
+  uint64 id = 2;
+  string tag = 3;
+  string weight = 4;
+}
+
+message MsgAddBaggageResponse {
+  uint64 baggage_id = 1;
+}
+
+message MsgUpdateBaggageStatus {
+  string creator = 1;
+  uint64 id = 2;
+  uint64 baggage_id = 3;
+  string status = 4;
+}
+
+message MsgUpdateBaggageStatusResponse {}
+
+// ---- Queries ----
+
+message QueryGetKeberangkatanRequest {
+  uint64 id = 1;
+}
+
+message QueryGetKeberangkatanResponse {
+  Keberangkatan keberangkatan = 1;
+}
+
+message QueryAllKeberangkatanRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllKeberangkatanResponse {
+  repeated Keberangkatan keberangkatan = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryKeberangkatanByJamaahRequest {
+  string jamaah = 1;
+}
+
+message QueryKeberangkatanByJamaahResponse {
+  repeated Keberangkatan keberangkatan = 1;
+}

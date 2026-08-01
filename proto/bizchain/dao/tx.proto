@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package bizchain.dao;
+
+import "cosmos_proto/cosmos.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "google/api/annotations.proto";
+import "bizchain/dao/dao.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/dao/types";
+
+// Msg defines the dao module Msg service
+service Msg {
+  // CreateProposal creates a new DAO proposal
+  rpc CreateProposal(MsgCreateProposal) returns (MsgCreateProposalResponse);
+  // CastVote casts a vote on a proposal
+  rpc CastVote(MsgCastVote) returns (MsgCastVoteResponse);
+  // CloseProposal closes a proposal and tallies the result
+  rpc CloseProposal(MsgCloseProposal) returns (MsgCloseProposalResponse);
+}
+
+// Query defines the dao module Query service
+service Query {
+  // Proposal queries a proposal by ID
+  rpc Proposal(QueryGetProposalRequest) returns (QueryGetProposalResponse) {
+    option (google.api.http) = { get: "/bizchain/dao/proposal/{id}" };
+  }
+  // ProposalAll queries all proposals
+  rpc ProposalAll(QueryAllProposalRequest) returns (QueryAllProposalResponse) {
+    option (google.api.http) = { get: "/bizchain/dao/proposal" };
+  }
+}
+
+// ---- Messages ----
+
+message MsgCreateProposal {
+  string creator = 1;
+  string title = 2;
+  string description = 3;
+  repeated string options = 4;
+  string deadline = 5;
+}
+
+message MsgCreateProposalResponse {
+  uint64 id = 1;
+}
+
+message MsgCastVote {
+  string creator = 1;
+  uint64 proposal_id = 2;
+  string option = 3;
+}
+
+message MsgCastVoteResponse {}
+
+message MsgCloseProposal {
+  string creator = 1;
+  uint64 proposal_id = 2;
+}
+
+message MsgCloseProposalResponse {
+  string result_option = 1;
+  string total_votes = 2;
+}
+
+// ---- Queries ----
+
+message QueryGetProposalRequest {
+  uint64 id = 1;
+}
+
+message QueryGetProposalResponse {
+  DaoProposal proposal = 1;
+}
+
+message QueryAllProposalRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllProposalResponse {
+  repeated DaoProposal proposal = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}

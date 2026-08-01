@@ -1,0 +1,114 @@
+syntax = "proto3";
+
+package bizchain.paket;
+
+import "cosmos_proto/cosmos.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "google/api/annotations.proto";
+import "bizchain/paket/paket.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/paket/types";
+
+// Msg defines the paket module Msg service
+service Msg {
+  // CreatePaket creates a new package (smart contract paket)
+  rpc CreatePaket(MsgCreatePaket) returns (MsgCreatePaketResponse);
+  // UpdatePaket updates package data
+  rpc UpdatePaket(MsgUpdatePaket) returns (MsgUpdatePaketResponse);
+  // BookPaket books a package and auto-closes quota when full
+  rpc BookPaket(MsgBookPaket) returns (MsgBookPaketResponse);
+  // AddReview adds a rating/review to a package (marketplace)
+  rpc AddReview(MsgAddReview) returns (MsgAddReviewResponse);
+}
+
+// Query defines the paket module Query service
+service Query {
+  // Paket queries a package by ID
+  rpc Paket(QueryGetPaketRequest) returns (QueryGetPaketResponse) {
+    option (google.api.http) = { get: "/bizchain/paket/paket/{id}" };
+  }
+  // PaketAll queries all packages (marketplace)
+  rpc PaketAll(QueryAllPaketRequest) returns (QueryAllPaketResponse) {
+    option (google.api.http) = { get: "/bizchain/paket/paket" };
+  }
+}
+
+// ---- Messages ----
+
+message MsgCreatePaket {
+  string creator = 1;
+  string name = 2;
+  string price = 3 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string schedule = 4;
+  uint64 quota = 5;
+  string hotel = 6;
+  string airline = 7;
+  string muthawif = 8;
+  string departure_date = 9;
+  string return_date = 10;
+  string category = 11;
+  string description = 12;
+  string image_url = 13;
+}
+
+message MsgCreatePaketResponse {
+  uint64 id = 1;
+}
+
+message MsgUpdatePaket {
+  string creator = 1;
+  uint64 id = 2;
+  string name = 3;
+  string price = 4 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string schedule = 5;
+  uint64 quota = 6;
+  string hotel = 7;
+  string airline = 8;
+  string muthawif = 9;
+  string departure_date = 10;
+  string return_date = 11;
+  string category = 12;
+  string description = 13;
+  string image_url = 14;
+  string status = 15;
+}
+
+message MsgUpdatePaketResponse {}
+
+message MsgBookPaket {
+  string creator = 1;
+  uint64 paket_id = 2;
+  uint64 quantity = 3;
+}
+
+message MsgBookPaketResponse {
+  bool quota_closed = 1;
+}
+
+message MsgAddReview {
+  string creator = 1;
+  uint64 paket_id = 2;
+  uint32 rating = 3;
+  string comment = 4;
+}
+
+message MsgAddReviewResponse {}
+
+// ---- Queries ----
+
+message QueryGetPaketRequest {
+  uint64 id = 1;
+}
+
+message QueryGetPaketResponse {
+  Paket paket = 1;
+}
+
+message QueryAllPaketRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllPaketResponse {
+  repeated Paket paket = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}

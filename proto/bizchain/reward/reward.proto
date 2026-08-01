@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package bizchain.reward;
+
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/reward/types";
+
+// Reward represents a loyalty token reward transaction
+message Reward {
+  uint64 id = 1;
+  string jamaah = 2;
+  string points = 3 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string reward_type = 4;      // cashback, discount, referral_bonus
+  string reason = 5;
+  string status = 6;           // awarded, redeemed, expired
+  string creator = 7;
+  string created_at = 8;
+}
+
+// RewardBalance tracks a jamaah's loyalty token balance
+message RewardBalance {
+  string jamaah = 1;
+  string balance = 2 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string earned = 3 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string redeemed = 4 [(cosmos_proto.scalar) = "cosmos.Int"];
+}
+
+// Params defines the parameters for the reward module
+message Params {
+  bool zero_fee_enabled = 1;
+}
+
+// GenesisState defines the genesis state of the reward module
+message GenesisState {
+  repeated Reward reward_list = 1;
+  repeated RewardBalance balance_list = 2;
+  uint64 reward_count = 3;
+  Params params = 4;
+}

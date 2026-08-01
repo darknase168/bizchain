@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package bizchain.asuransi;
+
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/asuransi/types";
+
+// Asuransi represents a digital insurance policy (travel, medical, cancellation, baggage)
+message Asuransi {
+  uint64 id = 1;
+  string jamaah = 2;
+  string policy_type = 3;   // travel, medical, cancellation, baggage
+  string premium = 4;       // paid premium
+  string coverage = 5;      // max coverage amount
+  string start_date = 6;
+  string end_date = 7;
+  string status = 8;        // active, expired, cancelled, claimed
+  string document_hash = 9;
+  string provider = 10;
+  string creator = 11;
+  string created_at = 12;
+  string updated_at = 13;
+}
+
+// AsuransiClaim represents an insurance claim with transparent processing
+message AsuransiClaim {
+  uint64 id = 1;
+  uint64 asuransi_id = 2;
+  string jamaah = 3;
+  string reason = 4;
+  string amount = 5;
+  string status = 6;        // submitted, approved, rejected, paid
+  string evidence_hash = 7;
+  string decision_by = 8;
+  string decision_note = 9;
+  string submitted_at = 10;
+  string decided_at = 11;
+}
+
+// Params defines the parameters for the asuransi module
+message Params {
+  bool zero_fee_enabled = 1;
+}
+
+// GenesisState defines the genesis state of the asuransi module
+message GenesisState {
+  repeated Asuransi asuransi_list = 1;
+  repeated AsuransiClaim claim_list = 2;
+  uint64 asuransi_count = 3;
+  uint64 claim_count = 4;
+  Params params = 5;
+}

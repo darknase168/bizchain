@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package bizchain.audit;
+
+option go_package = "github.com/bizchain/blockchain/x/audit/types";
+
+// AuditLog represents an immutable audit trail entry
+message AuditLog {
+  uint64 id = 1;
+  string module = 2;          // jamaah, paket, pembayaran, visa, ticket, dsb
+  string action = 3;          // created, updated, refunded, cancelled, dsb
+  string actor = 4;           // alamat pelaku
+  string target_id = 5;       // id objek yang diaudit
+  string data_hash = 6;       // hash data untuk verifikasi
+  string metadata = 7;        // JSON metadata
+  string created_at = 8;
+}
+
+// Params defines the parameters for the audit module
+message Params {
+  bool zero_fee_enabled = 1;
+}
+
+// GenesisState defines the genesis state of the audit module
+message GenesisState {
+  repeated AuditLog audit_log_list = 1;
+  uint64 audit_count = 2;
+  Params params = 3;
+}

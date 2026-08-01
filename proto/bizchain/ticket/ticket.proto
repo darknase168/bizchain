@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package bizchain.ticket;
+
+option go_package = "github.com/bizchain/blockchain/x/ticket/types";
+
+// Ticket represents an NFT flight ticket
+message Ticket {
+  uint64 id = 1;
+  string jamaah = 2;
+  uint64 paket_id = 3;
+  string airline = 4;
+  string flight_number = 5;
+  string seat = 6;
+  string schedule = 7;
+  string qr_code = 8;          // QR code payload (hash)
+  string nft_id = 9;           // NFT token identifier
+  string status = 10;          // issued, checked_in, boarded, used, void
+  string document_hash = 11;   // hash bukti tiket
+  string creator = 12;
+  string created_at = 13;
+}
+
+// Params defines the parameters for the ticket module
+message Params {
+  bool zero_fee_enabled = 1;
+}
+
+// GenesisState defines the genesis state of the ticket module
+message GenesisState {
+  repeated Ticket ticket_list = 1;
+  uint64 ticket_count = 2;
+  Params params = 3;
+}

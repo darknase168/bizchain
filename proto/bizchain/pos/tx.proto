@@ -1,0 +1,195 @@
+syntax = "proto3";
+
+package bizchain.pos;
+
+import "cosmos_proto/cosmos.proto";
+import "bizchain/pos/pos.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/pos/types";
+
+// Msg defines the POS module Msg service
+service Msg {
+  // CreateProduct creates a new product
+  rpc CreateProduct(MsgCreateProduct) returns (MsgCreateProductResponse);
+  // UpdateProduct updates an existing product
+  rpc UpdateProduct(MsgUpdateProduct) returns (MsgUpdateProductResponse);
+  // DeleteProduct deletes a product
+  rpc DeleteProduct(MsgDeleteProduct) returns (MsgDeleteProductResponse);
+  // CreateTransaction creates a new POS transaction (sale)
+  rpc CreateTransaction(MsgCreateTransaction) returns (MsgCreateTransactionResponse);
+  // CancelTransaction cancels a POS transaction (refund)
+  rpc CancelTransaction(MsgCancelTransaction) returns (MsgCancelTransactionResponse);
+  // AddStock adds stock to a product
+  rpc AddStock(MsgAddStock) returns (MsgAddStockResponse);
+  // AdjustStock adjusts stock of a product (loss/damage/return)
+  rpc AdjustStock(MsgAdjustStock) returns (MsgAdjustStockResponse);
+  // CreateUnit creates a new unit of measure (multi satuan)
+  rpc CreateUnit(MsgCreateUnit) returns (MsgCreateUnitResponse);
+  // UpdateUnit updates a unit of measure
+  rpc UpdateUnit(MsgUpdateUnit) returns (MsgUpdateUnitResponse);
+  // DeleteUnit deletes a unit of measure
+  rpc DeleteUnit(MsgDeleteUnit) returns (MsgDeleteUnitResponse);
+  // CreateAccount creates a chart of accounts entry
+  rpc CreateAccount(MsgCreateAccount) returns (MsgCreateAccountResponse);
+  // CreateJournalEntry creates a manual journal entry (akuntansi)
+  rpc CreateJournalEntry(MsgCreateJournalEntry) returns (MsgCreateJournalEntryResponse);
+}
+
+// MsgCreateProduct defines a message to create a new product
+message MsgCreateProduct {
+  string creator = 1;
+  string name = 2;
+  string description = 3;
+  string price = 4 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string cost_price = 5 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string sku = 6;
+  string category = 7;
+  string image_url = 8;
+  uint64 base_unit_id = 9;                    // satuan dasar
+  uint64 initial_stock = 10;
+  uint64 min_stock = 11;
+  string barcode = 12;
+  repeated PriceLevel price_levels = 13;      // harga per level
+  bool is_bundle = 14;                        // barang gabungan
+  repeated BundleComponent components = 15;   // komponen bundle
+  string branch_id = 16;                      // ID cabang (multi-cabang support)
+}
+
+message MsgCreateProductResponse {
+  uint64 id = 1;
+}
+
+// MsgUpdateProduct defines a message to update a product
+message MsgUpdateProduct {
+  string creator = 1;
+  uint64 id = 2;
+  string name = 3;
+  string description = 4;
+  string price = 5 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string cost_price = 6 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string sku = 7;
+  string category = 8;
+  string image_url = 9;
+  uint64 base_unit_id = 10;
+  uint64 min_stock = 11;
+  string barcode = 12;
+  repeated PriceLevel price_levels = 13;
+  bool is_bundle = 14;
+  repeated BundleComponent components = 15;
+}
+
+message MsgUpdateProductResponse {}
+
+// MsgDeleteProduct defines a message to delete a product
+message MsgDeleteProduct {
+  string creator = 1;
+  uint64 id = 2;
+}
+
+message MsgDeleteProductResponse {}
+
+// MsgCreateTransaction defines a message to create a POS transaction
+message MsgCreateTransaction {
+  string creator = 1;
+  string customer_address = 2;
+  repeated Item items = 3;
+  string discount = 4 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string tax = 5 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string payment_method = 6;
+  string note = 7;
+  string branch_id = 8;                       // ID cabang (multi-cabang support)
+}
+
+message MsgCreateTransactionResponse {
+  uint64 id = 1;
+  string total = 2 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string grand_total = 3 [(cosmos_proto.scalar) = "cosmos.Int"];
+}
+
+// MsgCancelTransaction defines a message to cancel/refund a transaction
+message MsgCancelTransaction {
+  string creator = 1;
+  uint64 id = 2;
+}
+
+message MsgCancelTransactionResponse {}
+
+// MsgAddStock defines a message to add stock to a product
+message MsgAddStock {
+  string creator = 1;
+  uint64 product_id = 2;
+  uint64 quantity = 3;   // dalam satuan transaksi
+  uint64 unit_id = 4;    // 0 = base unit
+  string cost_price = 5 [(cosmos_proto.scalar) = "cosmos.Int"]; // HPP pembelian
+}
+
+message MsgAddStockResponse {}
+
+// MsgAdjustStock defines a message to adjust stock (loss/damage/return)
+message MsgAdjustStock {
+  string creator = 1;
+  uint64 product_id = 2;
+  int64 quantity = 3;    // positif = masuk, negatif = keluar
+  string reason = 4;
+}
+
+message MsgAdjustStockResponse {}
+
+// MsgCreateUnit defines a message to create a unit of measure
+message MsgCreateUnit {
+  string creator = 1;
+  string name = 2;
+  string symbol = 3;
+  uint64 conversion_factor = 4; // 1 unit = N base
+  bool is_base = 5;
+}
+
+message MsgCreateUnitResponse {
+  uint64 id = 1;
+}
+
+// MsgUpdateUnit defines a message to update a unit of measure
+message MsgUpdateUnit {
+  string creator = 1;
+  uint64 id = 2;
+  string name = 3;
+  string symbol = 4;
+  uint64 conversion_factor = 5;
+  bool is_base = 6;
+}
+
+message MsgUpdateUnitResponse {}
+
+// MsgDeleteUnit defines a message to delete a unit of measure
+message MsgDeleteUnit {
+  string creator = 1;
+  uint64 id = 2;
+}
+
+message MsgDeleteUnitResponse {}
+
+// MsgCreateAccount defines a message to create a chart of accounts entry
+message MsgCreateAccount {
+  string creator = 1;
+  string code = 2;
+  string name = 3;
+  string type = 4;   // asset, liability, equity, revenue, expense
+  string description = 5;
+}
+
+message MsgCreateAccountResponse {
+  uint64 id = 1;
+}
+
+// MsgCreateJournalEntry defines a message to create a manual journal entry
+message MsgCreateJournalEntry {
+  string creator = 1;
+  string reference_type = 2;
+  uint64 reference_id = 3;
+  string description = 4;
+  repeated JournalLine lines = 5;
+}
+
+message MsgCreateJournalEntryResponse {
+  uint64 id = 1;
+}

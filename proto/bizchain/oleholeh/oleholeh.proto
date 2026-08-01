@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package bizchain.oleholeh;
+
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/oleholeh/types";
+
+// OlehOlehProduct represents a souvenir product in the oleh-oleh marketplace
+message OlehOlehProduct {
+  uint64 id = 1;
+  string name = 2;
+  string description = 3;
+  string price = 4;
+  string image_url = 5;
+  uint64 stock = 6;
+  string seller = 7;       // agent / wallet selling the product
+  string category = 8;
+  string status = 9;       // active, inactive
+  string creator = 10;
+  string created_at = 11;
+  string updated_at = 12;
+}
+
+// OlehOlehOrder represents a pre-order of oleh-oleh paid via wallet
+message OlehOlehOrder {
+  uint64 id = 1;
+  uint64 product_id = 2;
+  string product_name = 3;
+  string jamaah = 4;
+  uint64 quantity = 5;
+  string total = 6;
+  string status = 7;       // pending, paid, shipped, delivered, cancelled
+  string shipping_address = 8;
+  string creator = 9;
+  string created_at = 10;
+  string updated_at = 11;
+}
+
+// Params defines the parameters for the oleholeh module
+message Params {
+  bool zero_fee_enabled = 1;
+}
+
+// GenesisState defines the genesis state of the oleholeh module
+message GenesisState {
+  repeated OlehOlehProduct product_list = 1;
+  repeated OlehOlehOrder order_list = 2;
+  uint64 product_count = 3;
+  uint64 order_count = 4;
+  Params params = 5;
+}

@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package bizchain.jamaah;
+
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/jamaah/types";
+
+// DocumentHash represents a hashed document for verification (passport, visa, vaccine, health)
+message DocumentHash {
+  string doc_type = 1;   // passport, visa, vaccine, health, others
+  string hash = 2;       // SHA-256 hash stored on-chain
+  string storage_ref = 3; // off-chain object storage / IPFS reference
+  string uploaded_at = 4;
+}
+
+// VaccinationRecord represents a vaccine record
+message VaccinationRecord {
+  string vaccine_name = 1;
+  string date = 2;
+  string issuer = 3;
+  string batch = 4;
+}
+
+// DepartureHistoryItem represents a past departure record
+message DepartureHistoryItem {
+  uint64 paket_id = 1;
+  string year = 2;
+  string status = 3;
+  string date = 4;
+}
+
+// Jamaah represents a Hajj/Umroh pilgrim (self-sovereign DID on-chain)
+message Jamaah {
+  uint64 id = 1;
+  string name = 2;
+  string phone = 3;
+  string email = 4;
+  string address = 5;
+  string passport_number = 6;
+  string photo_hash = 7;
+  string status = 8;           // active, inactive, blocked
+  string did = 9;              // blockchain DID identifier
+  string creator = 10;
+  repeated DocumentHash documents = 11;
+  repeated VaccinationRecord vaccinations = 12;
+  repeated DepartureHistoryItem departure_history = 13;
+  string created_at = 14;
+  string updated_at = 15;
+}
+
+// Params defines the parameters for the jamaah module
+message Params {
+  bool zero_fee_enabled = 1;
+}
+
+// GenesisState defines the genesis state of the jamaah module
+message GenesisState {
+  repeated Jamaah jamaah_list = 1;
+  uint64 jamaah_count = 2;
+  Params params = 3;
+}

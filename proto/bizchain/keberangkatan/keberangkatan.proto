@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package bizchain.keberangkatan;
+
+option go_package = "github.com/bizchain/blockchain/x/keberangkatan/types";
+
+// BaggageItem represents a checked baggage item tracked via QR/NFC
+message BaggageItem {
+  uint64 id = 1;
+  string tag = 2;             // QR / NFC tag
+  string weight = 3;
+  string status = 4;          // checked_in, in_transit, arrived, delivered
+  string updated_at = 5;
+}
+
+// Keberangkatan tracks a pilgrim's departure journey through 9 stages
+// Status: 1. Daftar 2. DP Dibayar 3. Visa Diproses 4. Visa Terbit 5. Tiket Terbit
+//         6. Hotel Confirm 7. Manasik 8. Berangkat 9. Pulang
+message Keberangkatan {
+  uint64 id = 1;
+  string jamaah = 2;
+  uint64 paket_id = 3;
+  uint64 pembayaran_id = 4;
+  uint64 stage = 5;           // 1-9
+  string status_label = 6;
+  string departure_date = 7;
+  string return_date = 8;
+  string manasik_date = 9;
+  string hotel_confirm = 10;
+  string airline_confirm = 11;
+  repeated BaggageItem baggage = 12;
+  string creator = 13;
+  string created_at = 14;
+  string updated_at = 15;
+}
+
+// Params defines the parameters for the keberangkatan module
+message Params {
+  bool zero_fee_enabled = 1;
+}
+
+// GenesisState defines the genesis state of the keberangkatan module
+message GenesisState {
+  repeated Keberangkatan keberangkatan_list = 1;
+  uint64 keberangkatan_count = 2;
+  uint64 baggage_count = 3;
+  Params params = 4;
+}

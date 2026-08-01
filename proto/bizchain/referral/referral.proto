@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package bizchain.referral;
+
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/bizchain/blockchain/x/referral/types";
+
+// Referral represents an on-chain referral relationship
+message Referral {
+  uint64 id = 1;
+  string agent = 2;            // agen yang mereferensikan
+  string referred_jamaah = 3;  // jamaah yang direferensikan
+  uint64 paket_id = 4;
+  string commission_rate = 5 [(cosmos_proto.scalar) = "cosmos.Int"]; // basis poin (mis. 50 = 5%)
+  string commission = 6 [(cosmos_proto.scalar) = "cosmos.Int"];
+  string status = 7;           // pending, paid, cancelled
+  string paid_at = 8;
+  string creator = 9;
+  string created_at = 10;
+}
+
+// Params defines the parameters for the referral module
+message Params {
+  bool zero_fee_enabled = 1;
+  string default_commission_rate = 2 [(cosmos_proto.scalar) = "cosmos.Int"];
+}
+
+// GenesisState defines the genesis state of the referral module
+message GenesisState {
+  repeated Referral referral_list = 1;
+  uint64 referral_count = 2;
+  Params params = 3;
+}
